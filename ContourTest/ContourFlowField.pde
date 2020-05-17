@@ -16,21 +16,38 @@ public class ContourFlowField {
         // }
         
         for (Path contour : contours) {
+
+            ArrayList<ArrayList<PVector>> bucketPoints = new ArrayList<ArrayList<PVector>>(cols * rows);
+            for (int index = 0; index < cols * rows; index++) {
+                bucketPoints.add(new ArrayList<PVector>());
+            }
+
             PVector[] points = contour.getPoints();
             // println("PATH");
             // println(points);
             int numberOfPoints = points.length;
-            println("POINTS");
+
             for (int i = 0; i < numberOfPoints; i += 1) {
                 PVector start = points[i];
-                PVector end = points[(i + 1) % numberOfPoints];
-                PVector force = PVector.sub(end, start);
-
+                
                 int x = floor(start.x / res);
                 int y = floor(start.y / res);
                 int index = x + y * cols;
-                // println("start: ", start, " - end: ", end, " - index: ", index);
                 
+                
+                bucketPoints.get(index).add(start);
+            }
+
+            for (int index = 0; index < cols * rows; index++) {
+                ArrayList<PVector> bucket = bucketPoints.get(index);
+                if (bucket == null || bucket.size() == 0) continue;
+
+                PVector start = bucket.get(0);
+                PVector end = bucket.get(bucket.size() - 1);
+                PVector force = PVector.sub(end, start);
+                // println(bucket);
+                // println("start: ", start, " - end: ", end, " - force: ", force, " - index: ", index);
+
                 if (vectors[index] == null) {
                     vectors[index] = force;
                 } else {
@@ -64,6 +81,8 @@ public class ContourFlowField {
     }
 
     void display() {
+        stroke(255, 0, 0);
+        strokeWeight(1);
         for (int y = 0; y < rows; y++) {
             for (int x = 0; x < cols; x++) {
                 int index = x + y * cols;
@@ -71,10 +90,9 @@ public class ContourFlowField {
 
                 if (v == null) continue;
 
-                stroke(0, 0, 0);
-                strokeWeight(1);
                 pushMatrix();
-                translate(x * scl, y * scl + height);
+                translate(x * scl, y * scl);
+               
                 rotate(v.heading());
                 line(0, 0, scl, 0);
                 popMatrix();

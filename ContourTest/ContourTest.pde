@@ -7,6 +7,9 @@ OpenCV opencv;
 ArrayList<Contour> contours;
 ArrayList<Contour> polygons;
 
+ArrayList<Path> paths;
+ContourFlowField contourFlowField;
+
 
 void setup(){
     
@@ -23,6 +26,19 @@ void setup(){
     contours = opencv.findContours();
     println("found " + contours.size() + " contours");
 
+    paths = new ArrayList<Path>(contours.size());
+    for (Contour contour : contours) {
+        // println("CONTOUR");
+        ArrayList<PVector> points = contour.getPoints();
+        // println(points);
+        PVector[] pointArray = new PVector[points.size()];
+        points.toArray(pointArray);
+        Path path = new Path(pointArray, 10);
+        paths.add(path);
+    }
+
+    contourFlowField = new ContourFlowField(10, paths);
+
     background(255);
 }
 
@@ -38,19 +54,13 @@ void draw() {
    
     push();
     translate(width, height);
-    ArrayList<Path> paths = new ArrayList<Path>(contours.size());
-    for (Contour contour : contours) {
-        // println("CONTOUR");
-        ArrayList<PVector> points = contour.getPoints();
-        // println(points);
-        PVector[] pointArray = new PVector[points.size()];
-        points.toArray(pointArray);
-        Path path = new Path(pointArray, 10);
+    for (Path path: paths) {
         path.display();
-        paths.add(path);
     }
     pop();
 
-    ContourFlowField contourFlowField = new ContourFlowField(10, paths);
+    push();
+    translate(0, height);
     contourFlowField.display();
+    pop();
 }
