@@ -5,9 +5,11 @@ public class ContourFlowField {
     float inc = 0.1;
     float zoff = 0;
     int scl;
+    int magnitude;
 
-    ContourFlowField(int res, ArrayList<Path> contours) {
+    ContourFlowField(int res, ArrayList<Path> contours, int magnitude) {
         scl = res;
+        this.magnitude = magnitude;
         cols = floor(width / res) + 1;
         rows = floor(height / res) + 1;
         vectors = new PVector[cols * rows];
@@ -56,7 +58,9 @@ public class ContourFlowField {
             }
         }
 
-        
+        for (PVector v: vectors){
+            if (v != null) v.setMag(4);
+        }
     }
 
     void update() {
@@ -70,7 +74,7 @@ public class ContourFlowField {
                 // float angle = (noise(xoff, yoff, zoff) * PI - PI / 2) * imagePixels[index] + (PI / 2) * noise(zoff);
 
                 PVector v = PVector.fromAngle(angle);
-                v.setMag(6);
+                v.setMag(magnitude);
                 vectors[index] = v;
 
                 xoff += inc;
