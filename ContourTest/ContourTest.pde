@@ -17,6 +17,7 @@ void setup(){
 
     opencv.gray();
     opencv.threshold(70);
+    opencv.invert();
     dst = opencv.getOutput();
   
     contours = opencv.findContours();
@@ -33,19 +34,8 @@ void draw() {
   
     noFill();
     strokeWeight(3);
-    
     for (Contour contour : contours) {
-      stroke(0, 255, 0);
-      contour.draw();
-      println(contour.getPoints());
-
-      println(contour.getPolygonApproximationFactor());
-      
-      stroke(255, 0, 0);
-      beginShape();
-      for (PVector point : contour.getPolygonApproximation().getPoints()) {
-        vertex(point.x, point.y);
-      }
-      endShape();
+        Path path = new Path(contour.getPoints(), 10);
+        path.display();
     }
 }
