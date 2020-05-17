@@ -1,40 +1,32 @@
 class Path {
 
   // A Path is an arraylist of points (PVector objects)
-  ArrayList<PVector> points;
+  PVector[] points;
   // A path has a radius, i.e how far is it ok for the boid to wander off
   float radius;
 
-  Path() {
-    // Arbitrary radius of 20
-    radius = 20;
-    points = new ArrayList<PVector>();
-  }
-
-  Path(ArrayList<PVector> points) {
+  Path(PVector[] points) {
     // Arbitrary radius of 20
     radius = 20;
     this.points = points;
   }
 
-  Path(ArrayList<PVector> points, float radius) {
+  Path(PVector[] points, float radius) {
     // Arbitrary radius of 20
     this.radius = radius;
     this.points = points;
   }
 
-  // Add a point to the path
-  void addPoint(float x, float y) {
-    PVector point = new PVector(x, y);
-    points.add(point);
+  PVector[] getPoints() {
+      return points;
   }
-  
+
   PVector getStart() {
-     return points.get(0);
+     return points[0];
   }
 
   PVector getEnd() {
-     return points.get(points.size()-1);
+     return points[points.length-1];
   }
 
 

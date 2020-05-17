@@ -34,8 +34,23 @@ void draw() {
   
     noFill();
     strokeWeight(3);
+
+   
+    push();
+    translate(width, height);
+    ArrayList<Path> paths = new ArrayList<Path>(contours.size());
     for (Contour contour : contours) {
-        Path path = new Path(contour.getPoints(), 10);
+        // println("CONTOUR");
+        ArrayList<PVector> points = contour.getPoints();
+        // println(points);
+        PVector[] pointArray = new PVector[points.size()];
+        points.toArray(pointArray);
+        Path path = new Path(pointArray, 10);
         path.display();
+        paths.add(path);
     }
+    pop();
+
+    ContourFlowField contourFlowField = new ContourFlowField(10, paths);
+    contourFlowField.display();
 }
