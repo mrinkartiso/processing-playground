@@ -1,3 +1,5 @@
+import com.hamoid.*;
+
 import gab.opencv.*;
 
 
@@ -22,6 +24,8 @@ int contourFlowFieldMag = 10;
 int numberOfParticles = 50000;
 
 boolean debug = false;
+boolean renderVideo = false;
+VideoExport videoExport;
 
 void setup(){
     
@@ -65,6 +69,11 @@ void setup(){
 
     background(255);
     frameRate(30);
+    
+    if (renderVideo) {
+        videoExport = new VideoExport(this);
+        videoExport.startMovie();
+    }
 }
 
 void draw() {
@@ -99,4 +108,13 @@ void draw() {
         p.run(colors[0]);
     }
     // pop();
+    if (renderVideo) {
+        videoExport.saveFrame();
+    }
+}
+void keyPressed() {
+    if (renderVideo && key == 'q') {
+        videoExport.endMovie();
+        exit();
+    }
 }
