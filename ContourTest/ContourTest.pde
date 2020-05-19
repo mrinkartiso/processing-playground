@@ -21,16 +21,24 @@ color[] colors;
 int flowFieldScale = 10;
 int flowFieldMag = 1;
 int contourFlowFieldMag = 10;
-int numberOfParticles = 50000;
+int numberOfParticles = 70000;
 
 boolean debug = false;
-boolean renderVideo = false;
+boolean renderVideo = true;
+String videoName = "EiffelTower.mp4";
 VideoExport videoExport;
 
 void setup(){
+    src = loadImage("EiffelTower.png"); 
+    size(980, 1400, P2D);
+    // src = loadImage("artiso.png"); 
+    // size(1200, 626, P2D);
+    // println("eiffel: ", (980 * 1400) / 70000.0);
+    // println("artiso: ", (1200 * 625) / 50000.0);
+    numberOfParticles = floor(width * height / 15);
+    println("number of particles: ", numberOfParticles);
+
     
-    src = loadImage("artiso.png"); 
-    size(1200, 625, P2D);
 
     flowField = new FlowField(flowFieldScale, flowFieldMag);
 
@@ -58,9 +66,9 @@ void setup(){
     particles = new ArrayList<Particle>();
   
     for (int i = 0; i < numberOfParticles; i++) {
-        PVector start = new PVector(random(width), random(height));
+        PVector startPos = new PVector(random(width), random(height));
 
-        particles.add(new Particle(start, random(2, 4)));
+        particles.add(new Particle(startPos, random(2, 4)));
     }
 
     colors = new color[2];
@@ -68,10 +76,9 @@ void setup(){
     colors[1] = orange;
 
     background(255);
-    frameRate(30);
     
     if (renderVideo) {
-        videoExport = new VideoExport(this);
+        videoExport = new VideoExport(this, videoName);
         videoExport.startMovie();
     }
 }
