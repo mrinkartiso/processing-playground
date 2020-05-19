@@ -6,7 +6,8 @@ Capture cam;
 PImage logo;
 
 void setup(){
-    size(640, 480, P2D);
+    // size(640, 480, P2D);
+    fullScreen(P2D);
 
     String[] cameras = Capture.list();
 
@@ -20,7 +21,7 @@ void setup(){
     println("Available cameras:");
     printArray(cameras);
 
-    cam = new Capture(this, cameras[5]);
+    cam = new Capture(this, cameras[2]);
     cam.start();
   }
 }
@@ -34,16 +35,20 @@ void draw(){
     
     background(255);
     
-    int diameter = int( map(mouseX, 0, width, 5, 50));
-    cam.loadPixels();
+    int diameter = int(map(mouseX, 0, width, 15, 100));
+    surface.setTitle("diameter: " + diameter);
+    PImage frame = cam.get();
+    frame.resize(width/diameter, 0);
+    frame.loadPixels();
     fill(0);
-    stroke(0);
-    for (int x = diameter/2; x < width; x+=diameter) {
-        for (int y = diameter/2; y < height; y+=diameter) {
-            int pixelvalue = cam.pixels[x + y * cam.width];
+    noStroke();
+    translate(diameter / 2, diameter / 2);
+    for (int x = 0; x < frame.width; x++) {
+        for (int y = 0; y < frame.height; y++) {
+            int pixelvalue = frame.pixels[x + y * frame.width];
             float pixelbrightness = brightness(pixelvalue);
-            float value = map(pixelbrightness, 190, 40, 0, diameter);
-            ellipse(x, y, value, value);
+            float value = map(pixelbrightness, 255, 0, diameter / 5.0, diameter);
+            ellipse(x * diameter, y * diameter, value, value);
         }
     }
 }
