@@ -21,21 +21,23 @@ color[] colors;
 int flowFieldScale = 10;
 int flowFieldMag = 1;
 int contourFlowFieldMag = 10;
+int numberOfParticlesFactor = 15;
+// int numberOfParticlesFactor = 15;
 int numberOfParticles = 70000;
 
 boolean debug = false;
-boolean renderVideo = true;
+boolean renderVideo = false;
 String videoName = "EiffelTower.mp4";
 VideoExport videoExport;
 
 void setup(){
-    src = loadImage("EiffelTower.png"); 
-    size(980, 1400, P2D);
-    // src = loadImage("artiso.png"); 
-    // size(1200, 626, P2D);
+    // src = loadImage("EiffelTower.png"); 
+    // size(980, 1400, P2D);
+    src = loadImage("artiso.png"); 
+    size(1200, 626, P2D);
     // println("eiffel: ", (980 * 1400) / 70000.0);
     // println("artiso: ", (1200 * 625) / 50000.0);
-    numberOfParticles = floor(width * height / 15);
+    numberOfParticles = floor(width * height / numberOfParticlesFactor);
     println("number of particles: ", numberOfParticles);
 
     
@@ -84,37 +86,18 @@ void setup(){
 }
 
 void draw() {
-    // scale(0.5);
-    // image(src, 0, 0);
-    // image(dst, src.width, 0);
-  
-    // noFill();
-    // strokeWeight(3);
-
-   
-    // push();
-    // translate(width, height);
-    // for (Path path: paths) {
-    //     path.display();
-    // }
-    // pop();
-
-    // push();
-    // translate(0, height);
-
     flowField.update();
 
-    fill(255,10);
+    fill(255,15);
     rect(0,0,width,height);
     if (debug) {
-        contourFlowField.display();
+        // contourFlowField.display();
         flowField.display();
     }
     for (Particle p : particles) {
         p.follow(flowField, contourFlowField);
         p.run(colors[0]);
     }
-    // pop();
     if (renderVideo) {
         videoExport.saveFrame();
     }

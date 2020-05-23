@@ -20,7 +20,8 @@ public class FlowField {
             float yoff = 0;
             for (int x = 0; x < cols; x++) {
                 int index = x + y * cols;
-                float angle = noise(xoff, yoff, zoff) * TWO_PI * 2;
+                float angle = noise(xoff * 0.25, yoff * 0.25, zoff) * TWO_PI * 2;
+                // float angle = noise(xoff, yoff, zoff) * TWO_PI;
                 // float angle = noise(xoff, yoff, zoff) * TWO_PI * 4;
                 PVector v = PVector.fromAngle(angle);
                 v.setMag(magnitude);
@@ -30,7 +31,7 @@ public class FlowField {
             }
             yoff += inc;
         }
-        zoff += 0.003;
+        zoff += 0.002;
     }
 
     void display() {
