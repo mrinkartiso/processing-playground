@@ -10,8 +10,7 @@ ArrayList<Contour> contours;
 ArrayList<Contour> polygons;
 
 ArrayList<Path> paths;
-FlowField flowField;
-ContourFlowField contourFlowField;
+FlowField[] flowFields = new FlowField[2];
 ArrayList<Particle> particles;
 
 color orange = color(243, 147, 37);
@@ -21,7 +20,7 @@ color[] colors;
 int flowFieldScale = 10;
 int flowFieldMag = 1;
 int contourFlowFieldMag = 10;
-int numberOfParticlesFactor = 15;
+int numberOfParticlesFactor = 10;
 // int numberOfParticlesFactor = 15;
 int numberOfParticles = 70000;
 
@@ -40,10 +39,8 @@ void setup(){
     numberOfParticles = floor(width * height / numberOfParticlesFactor);
     println("number of particles: ", numberOfParticles);
 
-    
-
-    flowField = new FlowField(flowFieldScale, flowFieldMag);
-
+    NoiseFlowField flowField = new NoiseFlowField(40, flowFieldMag);
+    flowFields[0] = flowField;
     opencv = new OpenCV(this, src);
 
     opencv.gray();
@@ -63,7 +60,8 @@ void setup(){
         paths.add(path);
     }
 
-    contourFlowField = new ContourFlowField(flowFieldScale, paths, contourFlowFieldMag);
+    ContourFlowField contourFlowField = new ContourFlowField(flowFieldScale, paths, contourFlowFieldMag);
+    flowFields[1] = contourFlowField;
 
     particles = new ArrayList<Particle>();
   
@@ -86,16 +84,19 @@ void setup(){
 }
 
 void draw() {
-    flowField.update();
+    for (FlowField flowField : flowFields) {
+        flowField.update();
+    }
 
     fill(255,15);
     rect(0,0,width,height);
     if (debug) {
-        // contourFlowField.display();
-        flowField.display();
+        for (FlowField flowField : flowFields) {
+            flowField.display();
+        }
     }
     for (Particle p : particles) {
-        p.follow(flowField, contourFlowField);
+        p.follow(flowFields);
         p.run(colors[0]);
     }
     if (renderVideo) {

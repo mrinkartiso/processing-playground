@@ -1,10 +1,10 @@
-public class ContourFlowField extends FlowField {
+public class CaptureFlowField extends FlowField {
     float[] imagePixels;
     float inc = 0.1;
     float zoff = 0;
     int magnitude;
 
-    ContourFlowField(int res, ArrayList<Path> contours, int magnitude) {
+    CaptureFlowField(int res, ArrayList<Path> contours, int magnitude) {
         scl = res;
         this.magnitude = magnitude;
         cols = floor(width / res) + 1;
@@ -61,6 +61,24 @@ public class ContourFlowField extends FlowField {
     }
 
     public void update() {
+        float xoff = 0;
+        for (int y = 0; y < rows; y++) {
+            float yoff = 0;
+            for (int x = 0; x < cols; x++) {
+                int index = x + y * cols;
+
+                float angle = (noise(xoff, yoff, zoff) * PI * 4) * imagePixels[index] + (PI / 2) * noise(zoff);
+                // float angle = (noise(xoff, yoff, zoff) * PI - PI / 2) * imagePixels[index] + (PI / 2) * noise(zoff);
+
+                PVector v = PVector.fromAngle(angle);
+                v.setMag(magnitude);
+                vectors[index] = v;
+
+                xoff += inc;
+            }
+            yoff += inc;
+        }
+        zoff += 0.004;
     }
 
     public void display() {

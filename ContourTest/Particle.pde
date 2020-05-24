@@ -23,9 +23,11 @@ public class Particle {
     vel.limit(maxSpeed);
     acc.mult(0);
   }
-    void applyForce(PVector forceFlowField, PVector forceContourFlowField) {
-        if (forceContourFlowField != null) acc.add(forceContourFlowField);
-        acc.add(forceFlowField); 
+    void applyForce(FlowField[] flowFields) {
+      for (FlowField flowField : flowFields) {
+        PVector force = flowField.getForce(pos.x, pos.y);
+        if (force != null) acc.add(force);
+      } 
     }
   void show(color particleColor) {
     stroke(particleColor, 10);
@@ -56,11 +58,7 @@ public class Particle {
     this.previousPos.x = pos.x;
     this.previousPos.y = pos.y;
   }
-  void follow(FlowField flowField, ContourFlowField contourFlowField) {
-    int x = floor(pos.x / flowField.scl);
-    int y = floor(pos.y / flowField.scl);
-    int index = x + y * flowField.cols;
-    
-    applyForce(flowField.vectors[index], contourFlowField.vectors[index]);
+  void follow(FlowField[] flowFields) {
+    applyForce(flowFields);
   }
 }
