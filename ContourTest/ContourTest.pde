@@ -20,7 +20,7 @@ color[] colors;
 int flowFieldScale = 10;
 int flowFieldMag = 1;
 int contourFlowFieldMag = 10;
-int numberOfParticlesFactor = 10;
+int numberOfParticlesFactor = 15;
 // int numberOfParticlesFactor = 15;
 int numberOfParticles = 70000;
 
@@ -30,10 +30,10 @@ String videoName = "EiffelTower.mp4";
 VideoExport videoExport;
 
 void setup(){
-    // src = loadImage("EiffelTower.png"); 
-    // size(980, 1400, P2D);
-    src = loadImage("artiso.png"); 
-    size(1200, 626, P2D);
+    src = loadImage("EiffelTower.png"); 
+    size(980, 1400, P2D);
+    // src = loadImage("artiso.png"); 
+    // size(1200, 626, P2D);
     // println("eiffel: ", (980 * 1400) / 70000.0);
     // println("artiso: ", (1200 * 625) / 50000.0);
     numberOfParticles = floor(width * height / numberOfParticlesFactor);
