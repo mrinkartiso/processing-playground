@@ -1,10 +1,12 @@
+import gab.opencv.*;
+
 public class ContourFlowField extends FlowField {
     float[] imagePixels;
     float inc = 0.1;
     float zoff = 0;
     int magnitude;
 
-    ContourFlowField(int res, ArrayList<Path> contours, int magnitude) {
+    ContourFlowField(PApplet applet, int res, int magnitude) {
         scl = res;
         this.magnitude = magnitude;
         cols = floor(width / res) + 1;
@@ -13,8 +15,27 @@ public class ContourFlowField extends FlowField {
         // for(int i = 0; i < cols * rows; i++) {
         //     vectors[i] = new PVector();
         // }
+
+        opencv = new OpenCV(applet, src);
+
+        opencv.gray();
+        opencv.threshold(70);
+        opencv.invert();
+        dst = opencv.getOutput();
+    
+        ArrayList<Contour> contours = opencv.findContours();
+        println("found " + contours.size() + " contours");
+
+        paths = new ArrayList<Path>(contours.size());
+        for (Contour contour : contours) {
+            ArrayList<PVector> points = contour.getPoints();
+            PVector[] pointArray = new PVector[points.size()];
+            points.toArray(pointArray);
+            Path path = new Path(pointArray, 10);
+            paths.add(path);
+        }
         
-        for (Path contour : contours) {
+        for (Path contour : paths) {
 
             ArrayList<ArrayList<PVector>> bucketPoints = new ArrayList<ArrayList<PVector>>(cols * rows);
             for (int index = 0; index < cols * rows; index++) {

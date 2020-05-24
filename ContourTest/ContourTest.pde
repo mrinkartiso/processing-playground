@@ -1,8 +1,5 @@
 import com.hamoid.*;
 
-import gab.opencv.*;
-
-
 PImage src, dst;
 OpenCV opencv;
 
@@ -39,29 +36,8 @@ void setup(){
     numberOfParticles = floor(width * height / numberOfParticlesFactor);
     println("number of particles: ", numberOfParticles);
 
-    NoiseFlowField flowField = new NoiseFlowField(40, flowFieldMag);
-    flowFields[0] = flowField;
-    opencv = new OpenCV(this, src);
-
-    opencv.gray();
-    opencv.threshold(70);
-    opencv.invert();
-    dst = opencv.getOutput();
-  
-    contours = opencv.findContours();
-    println("found " + contours.size() + " contours");
-
-    paths = new ArrayList<Path>(contours.size());
-    for (Contour contour : contours) {
-        ArrayList<PVector> points = contour.getPoints();
-        PVector[] pointArray = new PVector[points.size()];
-        points.toArray(pointArray);
-        Path path = new Path(pointArray, 10);
-        paths.add(path);
-    }
-
-    ContourFlowField contourFlowField = new ContourFlowField(flowFieldScale, paths, contourFlowFieldMag);
-    flowFields[1] = contourFlowField;
+    flowFields[0] = new NoiseFlowField(40, flowFieldMag);
+    flowFields[1] = new ContourFlowField(this, flowFieldScale, contourFlowFieldMag);
 
     particles = new ArrayList<Particle>();
   
