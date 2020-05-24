@@ -66,9 +66,7 @@ void setup(){
     particles = new ArrayList<Particle>();
   
     for (int i = 0; i < numberOfParticles; i++) {
-        PVector startPos = new PVector(random(width), random(height));
-
-        particles.add(new Particle(startPos, random(2, 4)));
+        particles.add(new Particle(random(0.5, 4), int(random(100, 1000))));
     }
 
     colors = new color[2];
@@ -90,7 +88,7 @@ void draw() {
 
     fill(255,15);
     rect(0,0,width,height);
-    if (debug) {
+    if (debug || mouseY < height/2) {
         for (FlowField flowField : flowFields) {
             flowField.display();
         }
