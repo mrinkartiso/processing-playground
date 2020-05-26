@@ -5,23 +5,23 @@ public class ContourFlowField extends FlowField {
     float inc = 0.1;
     float zoff = 0;
     int magnitude;
+    
+    OpenCV opencv;
+    ArrayList<Path> paths;
 
-    ContourFlowField(PApplet applet, int res, int magnitude) {
+    ContourFlowField(PApplet applet, PImage src, int res, int magnitude) {
         scl = res;
         this.magnitude = magnitude;
         cols = floor(width / res) + 1;
         rows = floor(height / res) + 1;
         vectors = new PVector[cols * rows];
-        // for(int i = 0; i < cols * rows; i++) {
-        //     vectors[i] = new PVector();
-        // }
 
         opencv = new OpenCV(applet, src);
 
         opencv.gray();
         opencv.threshold(70);
         opencv.invert();
-        dst = opencv.getOutput();
+        PImage dst = opencv.getOutput();
     
         ArrayList<Contour> contours = opencv.findContours();
         println("found " + contours.size() + " contours");
@@ -43,8 +43,6 @@ public class ContourFlowField extends FlowField {
             }
 
             PVector[] points = contour.getPoints();
-            // println("PATH");
-            // println(points);
             int numberOfPoints = points.length;
 
             for (int i = 0; i < numberOfPoints; i += 1) {
@@ -53,7 +51,6 @@ public class ContourFlowField extends FlowField {
                 int x = floor(start.x / res);
                 int y = floor(start.y / res);
                 int index = x + y * cols;
-                
                 
                 bucketPoints.get(index).add(start);
             }
@@ -65,8 +62,6 @@ public class ContourFlowField extends FlowField {
                 PVector start = bucket.get(0);
                 PVector end = bucket.get(bucket.size() - 1);
                 PVector force = PVector.sub(end, start);
-                // println(bucket);
-                // println("start: ", start, " - end: ", end, " - force: ", force, " - index: ", index);
 
                 if (vectors[index] == null) {
                     vectors[index] = force;

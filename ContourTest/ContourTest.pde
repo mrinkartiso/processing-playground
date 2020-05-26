@@ -1,12 +1,5 @@
 import com.hamoid.*;
 
-PImage src, dst;
-OpenCV opencv;
-
-ArrayList<Contour> contours;
-ArrayList<Contour> polygons;
-
-ArrayList<Path> paths;
 FlowField[] flowFields = new FlowField[2];
 ArrayList<Particle> particles;
 
@@ -14,7 +7,7 @@ color orange = color(243, 147, 37);
 color anthrazit = color(74, 74, 73);
 color[] colors;
 
-int flowFieldScale = 10;
+int flowFieldScale = 5;
 int flowFieldMag = 1;
 int contourFlowFieldMag = 10;
 int numberOfParticlesFactor = 15;
@@ -23,21 +16,22 @@ int numberOfParticles = 70000;
 
 boolean debug = false;
 boolean renderVideo = false;
-String videoName = "EiffelTower.mp4";
+String videoName = "EiffelTower_NewFlow_025.mp4";
 VideoExport videoExport;
 
 void setup(){
-    src = loadImage("EiffelTower.png"); 
-    size(980, 1400, P2D);
-    // src = loadImage("artiso.png"); 
-    // size(1200, 626, P2D);
+    // PImage src = loadImage("EiffelTower.png"); 
+    // size(980, 1400, P2D);
+    PImage src = loadImage("artiso.png"); 
+    size(1200, 626, P2D);
     // println("eiffel: ", (980 * 1400) / 70000.0);
     // println("artiso: ", (1200 * 625) / 50000.0);
     numberOfParticles = floor(width * height / numberOfParticlesFactor);
     println("number of particles: ", numberOfParticles);
 
     flowFields[0] = new NoiseFlowField(40, flowFieldMag);
-    flowFields[1] = new ContourFlowField(this, flowFieldScale, contourFlowFieldMag);
+    // flowFields[1] = new CaptureFlowField(this, flowFieldScale);
+    flowFields[1] = new ContourFlowField(this, src, flowFieldScale, contourFlowFieldMag);
 
     particles = new ArrayList<Particle>();
   
@@ -64,7 +58,7 @@ void draw() {
 
     fill(255,15);
     rect(0,0,width,height);
-    if (debug || mouseY < height/2) {
+    if (debug || (!renderVideo && mouseY < height/2)) {
         for (FlowField flowField : flowFields) {
             flowField.display();
         }

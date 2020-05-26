@@ -1,84 +1,84 @@
+import processing.video.*;
+import gab.opencv.*;
+import java.awt.*;
+
 public class CaptureFlowField extends FlowField {
     float[] imagePixels;
     float inc = 0.1;
     float zoff = 0;
     int magnitude;
+    OpenCV opencv;
 
-    CaptureFlowField(int res, ArrayList<Path> contours, int magnitude) {
+    Capture cam;
+    PImage frame;
+    PApplet applet;
+
+    CaptureFlowField(PApplet applet, int res) {
+        this.applet = applet;
         scl = res;
-        this.magnitude = magnitude;
         cols = floor(width / res) + 1;
         rows = floor(height / res) + 1;
         vectors = new PVector[cols * rows];
-        // for(int i = 0; i < cols * rows; i++) {
-        //     vectors[i] = new PVector();
-        // }
         
-        for (Path contour : contours) {
-
-            ArrayList<ArrayList<PVector>> bucketPoints = new ArrayList<ArrayList<PVector>>(cols * rows);
-            for (int index = 0; index < cols * rows; index++) {
-                bucketPoints.add(new ArrayList<PVector>());
-            }
-
-            PVector[] points = contour.getPoints();
-            // println("PATH");
-            // println(points);
-            int numberOfPoints = points.length;
-
-            for (int i = 0; i < numberOfPoints; i += 1) {
-                PVector start = points[i];
-                
-                int x = floor(start.x / res);
-                int y = floor(start.y / res);
-                int index = x + y * cols;
-                
-                
-                bucketPoints.get(index).add(start);
-            }
-
-            for (int index = 0; index < cols * rows; index++) {
-                ArrayList<PVector> bucket = bucketPoints.get(index);
-                if (bucket == null || bucket.size() == 0) continue;
-
-                PVector start = bucket.get(0);
-                PVector end = bucket.get(bucket.size() - 1);
-                PVector force = PVector.sub(end, start);
-                // println(bucket);
-                // println("start: ", start, " - end: ", end, " - force: ", force, " - index: ", index);
-
-                if (vectors[index] == null) {
-                    vectors[index] = force;
-                } else {
-                    vectors[index] = vectors[index].add(force); 
-                }
-            }
+        for(int i = 0; i < cols * rows; i++) {
+            vectors[i] = new PVector();
         }
 
-        for (PVector v: vectors){
-            if (v != null) v.setMag(4);
+        String[] cameras = Capture.list();
+
+        if (cameras == null) {
+            println("Failed to retrieve the list of available cameras, will try the default...");
+            cam = new Capture(applet, 640, 480);
+        } if (cameras.length == 0) {
+            println("There are no cameras available for capture.");
+            exit();
+        } else {
+            println("Available cameras:");
+            printArray(cameras);
+    
+            cam = new Capture(applet, cameras[2]);
+            cam.start();
         }
     }
 
     public void update() {
-        float xoff = 0;
-        for (int y = 0; y < rows; y++) {
-            float yoff = 0;
-            for (int x = 0; x < cols; x++) {
-                int index = x + y * cols;
+        
 
-                float angle = (noise(xoff, yoff, zoff) * PI * 4) * imagePixels[index] + (PI / 2) * noise(zoff);
-                // float angle = (noise(xoff, yoff, zoff) * PI - PI / 2) * imagePixels[index] + (PI / 2) * noise(zoff);
+        if (frame != null) image(frame, 0, 0);
 
-                PVector v = PVector.fromAngle(angle);
-                v.setMag(magnitude);
-                vectors[index] = v;
+        if (cam.available() == true) {
+            cam.read();
 
-                xoff += inc;
+            if (opencv == null) {
+                opencv = new OpenCV(applet, cam.width, cam.height);
+                opencv.loadCascade(OpenCV.CASCADE_FRONTALFACE);  
             }
-            yoff += inc;
+
+            opencv.loadImage(cam);
+            opencv.gray();
+            opencv.threshold();
+            opencv.erode();
+            opencv.erode();
+            opencv.dilate();
+            opencv.dilate();
+            // opencv.invert();
+            frame = opencv.getSnapshot();
+            // frame = frame.get();
+            // frame.resize(width, 0);    
+
+            // opencv.findCannyEdges(20,75);
+            // frame = opencv.getSnapshot();
+
+            ArrayList<Contour> contours = opencv.findContours();
+            println("found " + contours.size() + " contours");
+
+            push();
+            stroke(255, 0, 0);
+            for (Contour contour : contours) {
+                contour.draw();
+            }
+            pop();
         }
-        zoff += 0.004;
     }
 
     public void display() {
