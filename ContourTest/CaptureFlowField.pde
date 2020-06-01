@@ -7,6 +7,9 @@ public class CaptureFlowField extends FlowField {
     float inc = 0.1;
     float zoff = 0;
     int magnitude;
+
+    float widthFactor, heightFactor;
+
     OpenCV opencv;
 
     Capture cam;
@@ -19,6 +22,7 @@ public class CaptureFlowField extends FlowField {
         cols = floor(width / res) + 1;
         rows = floor(height / res) + 1;
         vectors = new PVector[cols * rows];
+        println("CaptureFlowField ", cols, " x ", rows);
         
         for(int i = 0; i < cols * rows; i++) {
             vectors[i] = new PVector();
@@ -42,16 +46,15 @@ public class CaptureFlowField extends FlowField {
     }
 
     public void update() {
-        
-
-        if (frame != null) image(frame, 0, 0);
+        // if (frame != null) image(frame, 0, 0);
 
         if (cam.available() == true) {
             cam.read();
 
             if (opencv == null) {
                 opencv = new OpenCV(applet, cam.width, cam.height);
-                opencv.loadCascade(OpenCV.CASCADE_FRONTALFACE);  
+                widthFactor = float(width) / cam.width;
+                heightFactor = float(height) / cam.height;
             }
 
             opencv.loadImage(cam);
@@ -70,14 +73,56 @@ public class CaptureFlowField extends FlowField {
             // frame = opencv.getSnapshot();
 
             ArrayList<Contour> contours = opencv.findContours();
-            println("found " + contours.size() + " contours");
+            // println("found " + contours.size() + " contours");
 
-            push();
-            stroke(255, 0, 0);
+            // push();
+            // stroke(255, 0, 0);
+            // for (Contour contour : contours) {
+            //     contour.draw();
+            // }
+            // pop();
+
             for (Contour contour : contours) {
-                contour.draw();
+                ArrayList<PVector> points = contour.getPoints();
+                ArrayList<ArrayList<PVector>> bucketPoints = new ArrayList<ArrayList<PVector>>(cols * rows);
+                for (int index = 0; index < cols * rows; index++) {
+                    bucketPoints.add(new ArrayList<PVector>());
+                }
+
+                int numberOfPoints = points.size();
+
+                for (int i = 0; i < numberOfPoints; i += 1) {
+                    PVector start = points.get(i);
+                    
+                    int x = floor(start.x / scl * widthFactor);
+                    int y = floor(start.y / scl * heightFactor);
+                    int index = x + y * cols;
+                    
+                    bucketPoints.get(index).add(start);
+                }
+
+                for (int index = 0; index < cols * rows; index++) {
+                    ArrayList<PVector> bucket = bucketPoints.get(index);
+                    if (bucket == null || bucket.size() == 0) {
+                        vectors[index] = null;
+                        continue;
+                    }
+
+                    PVector start = bucket.get(0);
+                    PVector end = bucket.get(bucket.size() - 1);
+                    PVector force = PVector.sub(end, start);
+
+                    if (vectors[index] == null) {
+                        vectors[index] = force;
+                    } else {
+                        vectors[index] = vectors[index].add(force); 
+                    }
+                }
             }
-            pop();
+
+            for (PVector v: vectors){
+                if (v != null) v.setMag(10);
+            }
         }
     }
 

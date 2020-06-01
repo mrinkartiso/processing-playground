@@ -10,33 +10,34 @@ color[] colors;
 int flowFieldScale = 5;
 int flowFieldMag = 1;
 int contourFlowFieldMag = 10;
-int numberOfParticlesFactor = 15;
+int numberOfParticlesFactor = 10;
 // int numberOfParticlesFactor = 15;
 int numberOfParticles = 70000;
 
 boolean debug = false;
 boolean renderVideo = false;
-String videoName = "EiffelTower_NewFlow_025.mp4";
+String videoName = "Capture_Matthias_1.mp4";
 VideoExport videoExport;
 
 void setup(){
     // PImage src = loadImage("EiffelTower.png"); 
     // size(980, 1400, P2D);
-    PImage src = loadImage("artiso.png"); 
-    size(1200, 626, P2D);
+    // PImage src = loadImage("artiso.png"); 
+    // size(1200, 626, P2D);
+    size(1024, 768, P2D);
     // println("eiffel: ", (980 * 1400) / 70000.0);
     // println("artiso: ", (1200 * 625) / 50000.0);
     numberOfParticles = floor(width * height / numberOfParticlesFactor);
     println("number of particles: ", numberOfParticles);
 
     flowFields[0] = new NoiseFlowField(40, flowFieldMag);
-    // flowFields[1] = new CaptureFlowField(this, flowFieldScale);
-    flowFields[1] = new ContourFlowField(this, src, flowFieldScale, contourFlowFieldMag);
+    // flowFields[1] = new ContourFlowField(this, src, flowFieldScale, contourFlowFieldMag);
+    flowFields[1] = new CaptureFlowField(this, flowFieldScale);
 
     particles = new ArrayList<Particle>();
   
     for (int i = 0; i < numberOfParticles; i++) {
-        particles.add(new Particle(random(0.5, 4), int(random(100, 1000))));
+        particles.add(new Particle(random(4, 10), int(random(100, 1000))));
     }
 
     colors = new color[2];

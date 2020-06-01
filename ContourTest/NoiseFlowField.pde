@@ -8,6 +8,7 @@ public class NoiseFlowField extends FlowField {
         cols = floor(width / res) + 1;
         rows = floor(height / res) + 1;
         vectors = new PVector[cols * rows];
+        println("NoiseFlowField ", cols, " x ", rows);
     }
 
     public void update() {
