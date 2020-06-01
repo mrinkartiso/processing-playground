@@ -1,20 +1,13 @@
 
 PImage logo;
-PShape can;
-float angle;
+PShape cylinder;
 PShader colorShader;
 
 void setup(){
     size(1200, 625, P3D);
     logo = loadImage("artiso.png");
     logo.loadPixels();
-    can = createCylinder(8, 20, 32);
-    
-    // camera(70.0, 35.0, 220.0, width/2, height/2, 0.0, 0.0, 1.0, 0.0);
-    
-    // float fov = PI/3.0;
-    // float cameraZ = (height/2.0) / tan(fov/2.0);
-    // perspective(fov, float(width)/float(height), cameraZ/10.0, cameraZ*10.0);
+    cylinder = createCylinder(8, 20, 32);
 }
 
 void draw(){
@@ -41,35 +34,10 @@ void draw(){
             
             scale(1, 1, scale);
             translate(x, y);
-            shape(can);
+            shape(cylinder);
             pop();
         }
     }
-
-    translate(width/2, height/2);
-    noStroke();
-    fill(0, 0, 255);
-    scale(1, 1, map(sin(radians(frameCount)), -1, 1, 1, 3));
-    // rotateY(angle);
-    
-    
-    
-    angle += 0.01;
-    
-    // image(cam, 0, 0, width, height);
-
-    // int( map(mouseX, 0, width, 5, 50));
-    // logo.loadPixels();
-    // fill(0);
-    // stroke(0);
-    // for (int x = diameter/2; x < width; x+=diameter) {
-    //     for (int y = diameter/2; y < height; y+=diameter) {
-    //         int pixelvalue = logo.pixels[x + y * logo.width];
-    //         float pixelbrightness = brightness(pixelvalue);
-    //         float value = map(pixelbrightness, 190, 40, 0, diameter);
-    //         ellipse(x, y, value, value);
-    //     }
-    // }
 }
 
 // this is mostly the old code, with added shapes
