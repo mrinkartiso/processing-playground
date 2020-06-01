@@ -1,13 +1,22 @@
+import com.hamoid.*;
 
 PImage logo;
 PShape cylinder;
 PShader colorShader;
 
+boolean renderVideo = false;
+String videoName = "Capture_artiso_logo.mp4";
+VideoExport videoExport;
+
 void setup(){
-    size(1200, 625, P3D);
+    size(1200, 624, P3D);
     logo = loadImage("artiso.png");
     logo.loadPixels();
     cylinder = createCylinder(8, 20, 32);
+
+    if (renderVideo) {
+        videoExport = new VideoExport(this, videoName);
+    }
 }
 
 void draw(){
@@ -37,6 +46,21 @@ void draw(){
             shape(cylinder);
             pop();
         }
+    }
+
+    if (renderVideo) {
+        videoExport.saveFrame();
+    }
+}
+
+void keyPressed() {
+    if (renderVideo && key == 's') {
+        videoExport.startMovie();
+    }
+
+    if (renderVideo && key == 'q') {
+        videoExport.endMovie();
+        exit();
     }
 }
 
